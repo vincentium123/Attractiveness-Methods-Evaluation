@@ -1,0 +1,164 @@
+This is an example of the functions I used to conduct my replications.
+They varied slightly for each study due to differences in the dataset, but overall they followed the same pattern. 
+1. Load the data
+2. If relevant, create a new set of predictions from the average of the others
+3. Set up the analysis of each dataset
+4. Establish specific parameters and run
+
+
+```{r Loading}
+libraries <- c("haven", "dplyr", "sandwich", "lmtest", "robustbase", "estimatr", "stringr", "Metrics", "broom", "readr", "purrr")
+lapply(libraries, library, character.only = TRUE)
+merged <- read_dta("politicians_attr.dta")
+#Z-standardize the attractiveness rating, for calculating PC, RMSE
+merged$attr_score <- as.vector(scale(merged$attr_score))
+```
+
+```{r Create Averages}
+# Set the directory path for the input .csv files
+input_dir <- ""
+
+# Set the directory path for the output .csv file
+output_dir <- ""
+
+
+
+# List all .csv files in the input directory
+csv_files <- list.files(input_dir, pattern="*.csv", full.names = TRUE)
+
+# Read all .csv files into a list of data.frames
+df_list <- map(csv_files, read_csv)
+
+# Bind all data.frames into one data.frame
+df_combined <- bind_rows(df_list)
+
+# Calculate average predicted_value for each file_name
+df_avg <- df_combined %>%
+  group_by(file_name) %>%
+  summarise(predicted_value = mean(predicted_value, na.rm = TRUE))
+
+# Save the result to a new .csv file in the output directory
+write_csv(df_avg, paste0(output_dir, "/average.csv"))
+
+```
+
+```{r Set up the function}
+
+process_files <- function(directory, models, comparisonDF, comparisonColName, output_directory) {
+  # Get all csv file names
+  allFiles <- list.files(path = directory, pattern = "\\.csv$")
+  
+  # Initialize data frames to store all results and statistics
+  allResults <- data.frame()
+  allStats <- data.frame()
+  
+  
+  # Process each file
+  for (fileName in allFiles) {
+    # Construct the full file path
+    filePath <- file.path(directory, fileName)
+    
+    # Read the CSV file
+    data <- read.csv(filePath, stringsAsFactors = FALSE, header = TRUE)
+    
+    # If file name has "facepp", compute the average of 2nd and 3rd columns
+    #This was a dataset with a different structure
+    if (grepl("facepp", fileName)) {
+      data$Average <- rowMeans(data[, 2:3])
+      data <- data[, c(1, 4)]  # Extract 1st and 4th columns if facepp
+    } else {
+      data <- data[, c(1, 2)]  # Extract 1st and 2nd columns if not facepp
+    }
+    
+    # Rename the columns to ensure standardization
+    colnames(data) <- c("filename", "pred")
+    #Match with original dataset
+    data$filename <- str_remove(data$filename, ".jpg")
+    data$filename <- as.numeric(data$filename)
+    # Apply z-standardization on the "pred" column
+    data$pred <- as.vector(scale(data$pred))
+    #Marge the datasets together to run models
+    comparisonDF2 <- left_join(comparisonDF, data, join_by("Code" == "filename"))
+    #Eliminate rows where no predictions made
+    comparisonDF2 <- comparisonDF2 %>%
+      filter(!is.na(pred))
+    
+    # Initialize a vector to hold the results for this file
+    fileResults <- c(filename = fileName)
+    
+    # Loop over each model
+    for (modelName in names(models)) {
+      # Get the model formula
+      modelFormula <- models[[modelName]]
+      
+      # Fit the model, based on original paper
+      fit <- lm(modelFormula,data = comparisonDF2[comparisonDF2$big_party == 1,])
+      robust <- coeftest(fit, vcov = vcovHC(fit, type = "HC1"))
+
+      # Get the tidy summary of the model
+      summary <- tidy(robust)
+
+      # Loop over each predictor in the model
+      #Start at 2 to skip intercept
+      for (i in 2:nrow(summary)) {
+        # Extract the coefficient, SE, and p value for this predictor
+        coef <- summary$estimate[i]
+        se <- summary$std.error[i]
+        pvalue <- summary$p.value[i]
+
+        # Append these values to the results for this file
+        fileResults <- c(fileResults, coef, se, pvalue)
+      }
+    }
+
+    # Append the results for this file to the all results data frame
+    allResults <- rbind(allResults, fileResults)
+    
+    # Calculate the RMSE, MAE, and PC
+    #Comparison between prediction and real values
+    rmse <- rmse(comparisonDF2[[comparisonColName]], comparisonDF2$pred)
+    mae <- mae(comparisonDF2[[comparisonColName]], comparisonDF2$pred)
+    pc <- cor(comparisonDF2[[comparisonColName]], comparisonDF2$pred)
+
+    # Create a data frame with the stats
+    fileStats <- data.frame(filename = fileName, RMSE = rmse, MAE = mae, PC = pc)
+
+    # Append the stats for this file to the all stats data frame
+    allStats <- rbind(allStats, fileStats)
+  }
+  
+  # Generate column names for allResults
+  #They should be in the form modelname_variable_coef/p-value/SE
+  columnNames <- c("filename")
+  for (modelName in names(models)) {
+    modelFormula <- models[[modelName]]
+    predictorNames <- all.vars(modelFormula)[-1]  # get predictor names from formula, excluding the response variable
+    for (predictorName in predictorNames) {
+      columnNames <- c(columnNames, paste0(modelName, "_", predictorName, "_coef"), paste0(modelName, "_", predictorName, "_SE"), paste0(modelName, "_", predictorName, "_pvalue"))
+    }
+  }
+  colnames(allResults) <- columnNames  # set the column names
+  
+  # Write the all results and stats data frames to CSV files
+  write.csv(allResults, file.path(output_directory, "model_results.csv"), row.names = FALSE)
+  write.csv(allStats, file.path(output_directory, "stats.csv"), row.names = FALSE)
+}
+
+
+```
+
+```{r}
+models <- list(
+  "Model1" = as.formula("firstvote_share ~ pred + log_age + phd + male + incumbent_p + secondvote_share + turnout + unemployment_rate + percentage_male_population + size_1000 + population_density_1000 + party_SPD + p2 + p3 + p4")
+)
+
+# Call the function
+process_files(
+  directory = "",
+  models = models,
+  comparisonDF=merged,
+  comparisonColName = "attr_score",
+  output_directory = ""
+)
+```
+
