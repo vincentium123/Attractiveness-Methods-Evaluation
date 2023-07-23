@@ -5,4 +5,4 @@ My motivation for this came when reading a study in which researchers used a com
 
 Samples of the code used have been provided in this repository. Other parts I could not share publically due to privacy concerns. 
 
-#The State of the Field#
+#The State of the Field
