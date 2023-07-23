@@ -13,7 +13,7 @@ The images I planned to conduct inference on came from four published papers who
 
 Before doing this, however, I had one final step. The training images for the models were standardized, with completely vertical faces, no backgrounds, and fairly regular cropping. As I didn't know the original method used to produce the images, I made several different modifications ([removing backgrounds](https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/Background%20Remover.py), [rotating heads](https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/image_preparation.py), cropping the images closely) to each set of images before conducting inference on each set. As several image modifications mixed poorly with some of the datasets, this left me with a total of 171 image-modification-methods combinations to test. 
 
-
+![Image Preparation](images/image augmentation.JPG "Logo Title Text 1")
 
 
 
