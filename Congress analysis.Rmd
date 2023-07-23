@@ -1,0 +1,190 @@
+This code runs my third study, analyzing images from the US Congress. 
+
+```{r}
+library(stringr)
+library(tidyverse)
+library(gender)
+library(stargazer)
+```
+
+
+```{r}
+combo16 <- read.csv("Datasets/91st_Congress_mtcnn_combonet.csv")
+combo32 <- read.csv("Datasets/91st_Congress_mtcnn_combonet32.csv")
+combo_av <- read.csv("Datasets/91st congress averages.csv")
+
+#There was a mismatch in the ID in the dataset and the file names
+remove_zero <- function(string) {
+  if (str_sub(string, 1, 1) == "0") {
+    string <- str_sub(string, 2)
+  }
+  string <- str_remove(string, "\\.jpg$")
+  return(string)
+}
+
+#Preparing the three data sets
+combo16$file_name <- remove_zero(combo16$file_name)
+combo16$file_name <- as.numeric(combo16$file_name)
+colnames(combo16)[1] <- "icpsr"
+
+combo32$file_name <- remove_zero(combo32$file_name)
+combo32$file_name <- as.numeric(combo32$file_name)
+colnames(combo32)[1] <- "icpsr"
+
+combo_av$file_name <- remove_zero(combo_av$file_name)
+combo_av$file_name <- as.numeric(combo_av$file_name)
+colnames(combo_av)[1] <- "icpsr"
+
+```
+
+```{r}
+#Manually inputs the gender of some names that the Gender package didn't work on
+namer <- function(dataset){
+  temp <- dataset %>%
+    filter(is.na(dataset$gender))
+  temp$gender <- ifelse(temp$first_name == "Mondaire", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "RaÃºl", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Salud", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "H", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "KaialiÊ", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Mo", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Jodey", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Adriano", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Jahana", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Pramila", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Steny", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "C", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "AndrÃ", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "JesÃºs", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Hakeem", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Kat", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Albio", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Tomaz", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Kweisi", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "S", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Ilhan", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Chellie", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Mariannette", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Aston", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Markwayne", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Mikie", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Gwendolynne", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "K", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Aumua", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "TJ", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "JosÃ", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Tulsi", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Barack", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Ludmya", "female", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Jr", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "RubÃ", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Saxby", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Cresent", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "J", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Chaka", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "RaÃºl", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Beto", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "E", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Hansen", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "W", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "A", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Fortney", "male", temp$gender)
+  temp$gender <- ifelse(temp$first_name == "Edolphus", "male", temp$gender)
+  dataset <- rbind(dataset, temp)
+  dataset <- dataset %>%
+    filter(!is.na(dataset$gender))
+  return(dataset)
+}
+```
+
+
+```{r}
+#Load full dataset
+members <- read.csv("members.csv")
+
+#Calculate the age of the person
+members$age <- ((members$congress*2)+1789)-members$born-2
+members$party <- as.factor(members$party)
+
+#Get first names to figure out gender
+members <- members %>%
+  separate(name, into = c("last_name", "first_name"), sep = ", ", extra = "drop") %>%
+  mutate(first_name = str_extract(first_name, "\\w+"))
+
+#Remove any without known birth year- interferes with gender package
+members <- members %>%
+  filter(!is.na(born)) %>%
+  filter(congress >=91)
+
+#Figure out gender based on first names
+#Gender package uses birth year and the social security database for its calculations
+gen <- members %>% 
+  distinct(first_name, born) %>% 
+  group_by(born) %>% 
+  do(results = gender(.$first_name, years = .$born[1], method = "ssa")) %>%
+  do(bind_rows(.$results))
+gen <- gen[c(1,4,5)]
+colnames(gen) <- c("first_name", "gender", "born")
+
+
+members <- members %>%
+  left_join(gen, by = c("first_name", "born"))
+
+#Remove presidents
+members <- members %>%
+  filter(chamber != "President")
+
+#And manually add in some names
+members <- namer(members)
+
+#Remove independents/3rd party
+members <- members %>%
+  filter(party == "Democratic Party" | party == "Republican Party")
+
+```
+
+
+```{r}
+
+#Can filter based on what years you want to study
+#members <- members %>%
+#  filter(congress >=112)
+
+#Now combine the estimates with the main dataset
+members16 <- left_join(members, combo16, by="icpsr")
+members32 <- left_join(members, combo32, by="icpsr")
+membersav <- left_join(members, combo_av, by="icpsr")
+colnames(membersav)[15] <- "predicted_value"
+
+#Could run t.test- finds no correlation
+#t.test(membersav[membersav$party == "Democratic Party", "predicted_value"], membersav[membersav$party == "Republican Party", "predicted_value"])
+
+
+```
+
+
+
+```{r}
+#Run linear regressions on the three datasets
+
+lm16 <- lm(predicted_value ~ as.factor(party) + age + as.factor(chamber) + as.factor(gender), data=members16)
+lm32<- lm(predicted_value ~ as.factor(party) + age + as.factor(chamber) + as.factor(gender), data=members32)
+lmav <- lm(predicted_value ~ as.factor(party) + age + as.factor(chamber) + as.factor(gender), data=membersav)
+
+
+```
+
+```{r}
+#And format results
+
+stargazer(lm16, lm32, lmav, 
+          title="Results for 112th Congress",
+          column.labels= c("Batch Size 16", "Batch Size 32", "Average"),
+          dep.var.labels = "Attractiveness",
+          covariate.labels = c("Republican", "Age", "Senate", "Male"),
+          align = TRUE,
+          type="html", 
+          out="112th.html")
+```
+
+
