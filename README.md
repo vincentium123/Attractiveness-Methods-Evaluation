@@ -53,7 +53,9 @@ Only a minority of combinations produced significant results in all studies, and
 
 Much of the trouble can be seen in the table below. On their test set of their original dataset, many of these models performed extremely well- Pearson Correlations of around 0.9, RMSEs of 0.25-0.35 (Scores were typically from 1-5). On these new images, however, results were often quite poor.
 
-INSERT IMAGE
+| Measure | RMSE | PC | MAE |
+| :---: | :---: | :---: | :---: |
+| Average (Across All Datasets) | 1.24 | 0.23 | 1.00 |
 
 I developed a theory as to why- these models were trained on very rigid datasets. The most common dataset, [SCUT-FBP5500](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release) is quite well-made, but the images are highly similar to each other- front-facing, good lighting, no background, cropped in about the same way. The images used in these studies, however, are much more variable and naturalistic. There are differences in lighting, cropping, the tilt of the head, and other factors. There were other potential differences as well. The images from the studies have many older people; SCUT-FBP is largely young people. The studies I replicated were conducted in Europe, the US, and Australia; SCUT-FBP’s ratings come from Chinese people. The studies used many average-looking people; SCUT-FBP had disproportionately many highly attractive people. All of these were potential confounders, which I hoped to avoid. 
 
