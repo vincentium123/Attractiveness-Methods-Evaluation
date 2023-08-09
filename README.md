@@ -12,7 +12,7 @@ That’s the task I set for myself. I first tested eight publicly available pre-
 
 In the end, I concluded that researchers should not use neural networks to judge attractiveness in their research without making some verifiable improvements to their predictive ability. 
 
-##Technical Details
+## Technical Details
 
 The section before covered the basics of my project. Now, I’ll dive into the technical details. Many parts of my code can be found in this repository, but some I’ve had to hold back for privacy reasons (the authors of the papers I replicated asked me not to share any data). 
 
