@@ -23,13 +23,13 @@ With that, let’s get started.
 A surprising number of neural networks for gauging attractiveness can already be found on public Githubs or are accessible via APIs. I set out to test as many as possible. Here are the model architectures. 
 
 They are: 
-1.[ComboLoss](https://github.com/lucasxlu/ComboLoss)
-2.[ResNet-18](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release)
-3.[BeholderNet](https://github.com/beholdergan/Beholder-GAN)
-4.[CRNet](https://github.com/lucasxlu/CRNet)
-5.[HMTNet](https://github.com/lucasxlu/HMTNet)
-6.[Face++](https://www.faceplusplus.com/)
-7.[Baidu](https://github.com/miracleyoo/Face-Recognition-Using-Baidu-API)
+1. [ComboLoss](https://github.com/lucasxlu/ComboLoss)
+2. [ResNet-18](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release)
+3. [BeholderNet](https://github.com/beholdergan/Beholder-GAN)
+4. [CRNet](https://github.com/lucasxlu/CRNet)
+5. [HMTNet](https://github.com/lucasxlu/HMTNet)
+6. [Face++](https://www.faceplusplus.com/)
+7. [Baidu](https://github.com/miracleyoo/Face-Recognition-Using-Baidu-API)
 
 The last two are available via APIs- unfortunately there’s no public information about the training methods or network architectures. 
 
