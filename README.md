@@ -46,7 +46,7 @@ To replicate the studies, I first conducted inference on the images in Google Co
 Unfortunately, the models struggled to produce good real-world results. 
 
 | Model | #1 | #2 | #3 | #4 | #5 | #6 |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Attempts Replicated (%) | 0 | 0 | 0 | 2.7 | 10.8 | 27.0 |
 
 Only a minority of combinations produced significant results in all studies, and three studies showed no significant results at all. Of the combinations that produced significant results, most did produce coefficients in-line with the original studies. In this case, I defined this as of the same approximate real-world implications. Three, however, did not, meaning that only 8.1% of the model-study-image combinations replicated successfully- hardly a rousing success. 
