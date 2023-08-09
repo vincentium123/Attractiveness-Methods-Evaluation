@@ -35,7 +35,7 @@ The last two are available via APIs- unfortunately there’s no public informati
 
 To test how accurate these methods are at predicting scores on new images from outside their training/testing set, I attempted to replicate five published scientific studies. Each study used attractiveness, as measured by human raters, as an independent variable. 
 
-Before conducting inferences on the images, I did a variety of image manipulation techniques- removing backgrounds, rotating them, using MTCNN to crop and center them- in order to better match the training images. I applied them separately and in combination with each other, as I didn’t know beforehand which combination would produce the best results.
+Before conducting inferences on the images, I did a variety of image manipulation techniques- removing backgrounds, rotating them, using [MTCNN](https://github.com/timesler/facenet-pytorch/tree/master) to crop and center them- in order to better match the training images. I applied them separately and in combination with each other, as I didn’t know beforehand which combination would produce the best results.
 
 <h3><img align="center" height="300" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/image%20augmentation.JPG"></h3>
 
