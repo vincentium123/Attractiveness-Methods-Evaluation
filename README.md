@@ -8,7 +8,7 @@ To answer this question, I used Python to prepare images, R to conduct studies, 
 
 Some academic researchers have started using neural networks to judge the attractiveness of people in photographs and then using those values in the research they publish. This sounds bizarre, but there’s logic behind it- research has shown that humans have a consistent bias towards attractive people. The more attractive someone is, the more votes they win in elections, the more money they receive from investors, and the more positively people think of them overall. Typically, research in this field has been done using large-scale surveys, but they’re expensive and time-consuming. Properly trained neural networks, on the other hand, can grade thousands of images in minutes. 
 
-There’s a problem, however, that no researchers have yet dealt with- seeing how accurate these neural networks are. Often the trained neural networks are trained on the bulk of a dataset (80-90%) then tested on the remainder. That’s fine, but what it doesn’t cover is how well the neural networks do on a new dataset- in other words, how generalizable they are. 
+There’s a problem, however, that no researchers have yet dealt with- seeing how accurate these neural networks are. Often the trained neural networks are trained on the bulk of a dataset (80-90%) then tested on the remainder. That’s useful information, but what it doesn’t cover is how well the neural networks do on a new dataset- in other words, how generalizable they are. 
 
 That’s the task I set for myself. I first tested eight publicly available pre-trained neural networks by attempting to replicate the results of five published studies (the authors kindly shared their data with me). As they largely failed to replicate the studies, I then trained two new neural networks on a newer dataset that I hoped corrected the flaws of earlier datasets. With these two new networks, I then ran the five studies again and conducted a new study on my own. Results were better, but far from perfect. 
 
@@ -28,7 +28,7 @@ They are:
 1. [ComboLoss](https://github.com/lucasxlu/ComboLoss)
 2. [ResNet-18](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release)
 3. [BeholderNet](https://github.com/beholdergan/Beholder-GAN)
-4. [CRNet](https://github.com/lucasxlu/CRNet)
+4. [CRNet](https://github.com/lucasxlu/CRNet)- trained on two different datasets
 5. [HMTNet](https://github.com/lucasxlu/HMTNet)
 6. [Face++](https://www.faceplusplus.com/)
 7. [Baidu](https://github.com/miracleyoo/Face-Recognition-Using-Baidu-API)
