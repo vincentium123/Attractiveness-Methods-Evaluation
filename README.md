@@ -37,7 +37,7 @@ To test how accurate these methods are at predicting scores on new images from o
 
 Before conducting inferences on the images, I did a variety of image manipulation techniques- removing backgrounds, rotating them, using MTCNN to crop and center them- in order to better match the training images. I applied them separately and in combination with each other, as I didn’t know beforehand which combination would produce the best results.
 
-PIC
+<h3><img align="center" height="300" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/image%20augmentation.JPG"></h3>
 
 This left me with 171 combinations of studies-models-images. I used each model to conduct inference on each set of images, then used the results in the original regression models for each study. I counted a study as successfully replicated if I saw two things: the attractiveness variable was significant at the 5% level and the attractiveness coefficient had approximately the same real-world effect. 
 
