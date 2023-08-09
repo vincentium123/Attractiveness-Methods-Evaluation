@@ -57,7 +57,7 @@ Much of the trouble can be seen in the table below. On their test set of their o
 | :---: | :---: | :---: | :---: |
 | Average (Across All Datasets) | 1.24 | 0.23 | 1.00 |
 
-I developed a theory as to why- these models were trained on very rigid datasets. The most common dataset, [SCUT-FBP5500](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release) is quite well-made, but the images are highly similar to each other- front-facing, good lighting, no background, cropped in about the same way. The images used in these studies, however, are much more variable and naturalistic. There are differences in lighting, cropping, the tilt of the head, and other factors. There were other potential differences as well. The images from the studies have many older people; SCUT-FBP is largely young people. The studies I replicated were conducted in Europe, the US, and Australia; SCUT-FBP’s ratings come from Chinese people. The studies used many average-looking people; SCUT-FBP had disproportionately many highly attractive people. All of these were potential confounders, which I hoped to avoid. 
+I developed a theory as to why- these models were trained on very rigid datasets. The most common dataset, [SCUT-FBP5500,](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release) is quite well-made, but the images are highly similar to each other- front-facing, good lighting, no background, cropped in about the same way. The images used in these studies, however, are much more variable and naturalistic. There are differences in lighting, cropping, the tilt of the head, and other factors. There were other potential differences as well. The images from the studies have many older people; SCUT-FBP is largely young people. The studies I replicated were conducted in Europe, the US, and Australia; SCUT-FBP’s ratings come from Chinese people. The studies used many average-looking people; SCUT-FBP had disproportionately many highly attractive people. All of these were potential confounders, which I hoped to avoid. 
 
 INSERT EXAMPLE IMAGES
 
@@ -65,8 +65,18 @@ INSERT EXAMPLE IMAGES
 
 To train my own neural networks, I selected a newly created dataset: [MEBeauty](https://github.com/fbplab/MEBeauty-database). Previous datasets tended to be largely formal, and had little diversity in age and ethnicity. MEBeauty, however, contains a wide variety of images from around the world, including of older people. The images are also more naturalistic(different lighting, different poses, etc.) and were created in a standardized way that was easy to copy. 
 
+<h3><img align="center" height="300" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/ME3.png"></h3>
+
+
 I trained several new neural networks on it, and selected the two best performing ones. Both were versions of the [ComboLoss](https://github.com/lucasxlu/ComboLoss) model. They had identical hyperparameters, except one had a batch size of 16 while the other had a batch size of 32. 
-SPECS
+
+| Model | RMSE | MAE | OC |
+| :---: | :---: | :---: | :---: |
+| ComboLoss (MEBeauty) (BS 16) | 1.07 | 0.82 | 0.64 |
+| :---: | :---: | :---: | :---: |
+| ComboLoss (MEBeauty) (BS 32) | 1.05 | 0.84 | 0.67 |
+| :---: | :---: | :---: | :---: |
+| ComboLoss (SCUT-FBP5500) | 0.21 | 0.27 | 0.92 |
 
 These models performed worse on their test sets than models trained on the SCUT-FBP5500 dataset, which I believe is due to the greater variety of the images. Their performance was similar to models created by the developers of the MEBeauty dataset. 
 
@@ -74,7 +84,7 @@ Once I had my models, I set out to test them in two ways. Firstly, I attempted t
 
 My results were mixed. Most studies, once again, did not replicate. Furthermore, the results were confusing. The two models’ performances diverged even though on the test sets they’d been extremely similar. What’s more, it was different studies that replicated this time. 
 
-TABLE
+<h3><img align="center" height="200" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/mymodel_pvalues.JPG"></h3>
 
 Following these replications, I attempted one more test of my neural networks. A consistent finding in the literature has been that right-wing politicians are slightly more attractive than left-wing ones. No one knows why, but it’s been found in studies from Finland, the US, Germany, Australia, and the UK. 
 
