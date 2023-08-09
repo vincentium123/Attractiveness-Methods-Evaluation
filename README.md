@@ -90,7 +90,7 @@ I therefore conducted a quick test on images of members of the US Congress from 
 
 As a first step, I did a t-test, which did not show a significant difference. As, however, there are several major difference between the parties- Republican politicians are older and more likely to be white and male, I conducted a linear regression as well. For a dependent variable, I used the attractiveness scores from my models. For my independent and control variables, I chose party, age, chamber (House/Senate), and gender. 
 
-STARGAZER
+<h3><img align="center" height="400" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/stargazer%20congress.JPG"></h3>
 
 Results from the OLS models largely line up with previous findings. Both neural networks find that Republican legislators are positively correlated with attractiveness at the 10% level, while the average finds the effect at the 5% level. This is even more suggestive than at first glance- I ran my neural networks over the same images three times, each time generating somewhat different results. In the other two instances, the neural network with batch size 16 found the Republican-attractiveness correlation at the 5% level. The effect size, however, is fairly marginal. Attractiveness in this study is measured from 1-10, and the effect of being a Republican is only 0.065- hardly important in real life. This is smaller than the effect found in other studies.
 
