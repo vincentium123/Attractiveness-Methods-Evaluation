@@ -1,3 +1,5 @@
+# An Evaluation of Using Deep Learning Techniques in Social Science Research to Judge Attractiveness
+
 This repository contains the code for my Master’s Thesis in Political Science at the University of Mannheim. For my thesis, I chose a methods-oriented project: whether a practice in social science research, using neural networks to gauge the attractiveness of people in images, gives sufficiently accurate results to be used. 
 
 To answer this question, I used Python to prepare images, R to conduct studies, and Pytorch, alongside Amazon Sagemaker and S3, to train deep learning computer vision models. 
