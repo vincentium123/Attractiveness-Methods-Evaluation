@@ -73,9 +73,7 @@ I trained several new neural networks on it, and selected the two best performin
 | Model | RMSE | MAE | OC |
 | :---: | :---: | :---: | :---: |
 | ComboLoss (MEBeauty) (BS 16) | 1.07 | 0.82 | 0.64 |
-| :---: | :---: | :---: | :---: |
 | ComboLoss (MEBeauty) (BS 32) | 1.05 | 0.84 | 0.67 |
-| :---: | :---: | :---: | :---: |
 | ComboLoss (SCUT-FBP5500) | 0.21 | 0.27 | 0.92 |
 
 These models performed worse on their test sets than models trained on the SCUT-FBP5500 dataset, which I believe is due to the greater variety of the images. Their performance was similar to models created by the developers of the MEBeauty dataset. 
