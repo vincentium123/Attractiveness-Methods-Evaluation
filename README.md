@@ -1,5 +1,7 @@
 # An Evaluation of Using Deep Learning Techniques in Social Science Research to Judge Attractiveness
 
+**This is the English version. Die deutsche Version finden Sie weiter unten.**
+
 This repository contains the code for my Master’s Thesis in Political Science at the University of Mannheim. For my thesis, I chose a methods-oriented project: whether a practice in social science research, using neural networks to gauge the attractiveness of people in images, gives sufficiently accurate results to be used. 
 
 To answer this question, I used Python to prepare images, R to conduct studies, and Pytorch, alongside Amazon Sagemaker and S3, to train deep learning computer vision models. 
@@ -99,3 +101,7 @@ The control variables also contain some interesting information. Previous studie
 ## Conclusion
 
 Throughout these studies, one thing has been clear: deep learning methods, at least at their present state, are not accurate enough at consistently gauging human attractiveness to be used in scientific research. They do sometimes produce accurate results, but it is difficult to tell beforehand if they will. Throughout these studies, deep learning methods which performed extremely well on one dataset failed completely on another, despite clear similarities. This extends even to those which performed well on test datasets post-training. Even worse, two highly similar deep learning methods can have similar results on a test set, but diverge when applied to real-world questions. The black-box nature of deep learning makes it nearly impossible to judge beforehand. 
+
+***
+
+# Eine Bewertung des Einsatzes von Deep Learning-Techniken in der sozialwissenschaftlichen Forschung zur Beurteilung der Attraktivität
