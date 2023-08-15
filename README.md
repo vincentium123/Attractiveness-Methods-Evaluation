@@ -72,7 +72,7 @@ To train my own neural networks, I selected a newly created dataset: [MEBeauty](
 
 I [trained](https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/training.ipynb) several new neural networks on it, and selected the two best performing ones. Both were versions of the [ComboLoss](https://github.com/lucasxlu/ComboLoss) model. They had identical hyperparameters, except one had a batch size of 16 while the other had a batch size of 32. 
 
-| Model | RMSE | MAE | OC |
+| Model | RMSE | MAE | PC |
 | :---: | :---: | :---: | :---: |
 | ComboLoss (MEBeauty) (BS 16) | 1.07 | 0.82 | 0.64 |
 | ComboLoss (MEBeauty) (BS 32) | 1.05 | 0.84 | 0.67 |
@@ -105,3 +105,104 @@ Throughout these studies, one thing has been clear: deep learning methods, at le
 ***
 
 # Eine Bewertung des Einsatzes von Deep Learning-Techniken in der sozialwissenschaftlichen Forschung zur Beurteilung der Attraktivität
+
+Dieses Repository enthält den Code für meine Masterarbeit in Politikwissenschaft an der Universität Mannheim. Für meine Arbeit wählte ich ein methodenorientiertes Projekt: ob eine Praxis in der sozialwissenschaftlichen Forschung, die Verwendung neuronaler Netze zur Bewertung der Attraktivität von Menschen auf Bildern, ausreichend genaue Ergebnisse liefert, um verwendet zu werden. 
+
+Um diese Frage zu beantworten, habe ich Python zur Aufbereitung von Bildern, R zur Durchführung von Studien und Pytorch zusammen mit Amazon Sagemaker und S3 zum Training von Deep-Learning-Computer-Vision-Modellen verwendet. 
+
+## Eine kurze Zusammenfassung
+
+Einige akademische Forscher haben damit begonnen, neuronale Netze einzusetzen, um die Attraktivität von Menschen auf Fotos zu beurteilen und diese Werte dann in ihren Veröffentlichungen zu verwenden. Das hört sich bizarr an, hat aber eine gewisse Logik: Die Forschung hat gezeigt, dass der Mensch attraktive Menschen immer bevorzugt. Je attraktiver jemand ist, desto mehr Stimmen erhalten sie bei Wahlen, desto mehr Geld erhalten sie von Investoren und desto positiver denken die Menschen insgesamt über sie. In der Regel wurde die Forschung auf diesem Gebiet mit groß angelegten Umfragen durchgeführt, die jedoch teuer und zeitaufwändig sind. Richtig trainierte neuronale Netze hingegen können Tausende von Bildern in wenigen Minuten bewerten. 
+
+Es gibt jedoch ein Problem, mit dem sich noch kein Forscher befasst hat: Wie genau sind diese neuronalen Netze? Häufig werden die trainierten neuronalen Netze mit dem Großteil eines Datensatzes (80-90 %) trainiert und dann mit dem Rest getestet. Das ist eine nützliche Information, aber sie sagt nichts darüber aus, wie gut die neuronalen Netze in einem neuen Datensatz funktionieren - mit anderen Worten, wie verallgemeinerbar sie sind. 
+
+Das ist die Aufgabe, die ich mir gestellt habe. Zunächst testete ich acht öffentlich verfügbare vortrainierte neuronale Netze, indem ich versuchte, die Ergebnisse von fünf veröffentlichten Studien zu replizieren (die Autoren stellten mir ihre Daten zur Verfügung). Da es ihnen nicht gelang, die Studien zu replizieren, trainierte ich zwei neue neuronale Netze auf einem neueren Datensatz, von dem ich hoffte, dass er die Fehler der früheren Datensätze korrigierte. Mit diesen beiden neuen Netzen habe ich dann die fünf Studien erneut durchgeführt und eine neue Studie auf eigene Faust durchgeführt. Die Ergebnisse waren besser, aber noch lange nicht perfekt. 
+
+Am Ende kam ich zu dem Schluss, dass Forscher keine neuronalen Netze zur Beurteilung der Attraktivität in ihrer Forschung einsetzen sollten, ohne ihre Vorhersagefähigkeit nachweislich zu verbessern. 
+
+## Technische Details
+
+Im vorigen Abschnitt habe ich die Grundlagen meines Projekts erläutert. Jetzt werde ich auf die technischen Details eingehen. Viele Teile meines Codes sind in diesem Repository zu finden, aber einige musste ich aus Datenschutzgründen zurückhalten (die Autoren der Papiere, die ich repliziert habe, haben mich gebeten, keine Daten weiterzugeben). 
+
+Also, fangen wir an. 
+
+### Bestehende neuronale Netze
+
+Eine überraschende Anzahl von neuronalen Netzen zur Bewertung der Attraktivität findet sich bereits auf öffentlichen Githubs oder ist über APIs zugänglich. Ich habe mir vorgenommen, so viele wie möglich zu testen. Hier sind die Modellarchitekturen. 
+
+Sie sind: 
+1. [ComboLoss](https://github.com/lucasxlu/ComboLoss)
+2. [ResNet-18](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release)
+3. [BeholderNet](https://github.com/beholdergan/Beholder-GAN)
+4. [CRNet](https://github.com/lucasxlu/CRNet)- zwei Versionen, trainiert auf zwei verschiedenen Datensätzen
+5. [HMTNet](https://github.com/lucasxlu/HMTNet)
+6. [Face++](https://www.faceplusplus.com/)
+7. [Baidu](https://github.com/miracleyoo/Face-Recognition-Using-Baidu-API)
+
+Die letzten beiden sind über APIs verfügbar - leider gibt es keine öffentlichen Informationen über die Trainingsmethoden oder Netzwerkarchitekturen. 
+
+Um zu testen, wie genau diese Methoden bei der Vorhersage von Bewertungen für neue Bilder sind, die nicht aus ihrer Trainings-/Testgruppe stammen, habe ich versucht, fünf veröffentlichte wissenschaftliche Studien zu replizieren. In jeder Studie wurde die von menschlichen Bewertern gemessene Attraktivität als unabhängige Variable verwendet. 
+
+Bevor ich Rückschlüsse auf die Bilder gezogen habe, habe ich eine Reihe von [Bildmanipulationstechniken}(https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/Background%20Remover.py) angewandt - Entfernen von Hintergründen, Drehen, Zuschneiden und Zentrieren mit [MTCNN](https://github.com/timesler/facenet-pytorch/tree/master), um sie besser an die Trainingsbilder anzupassen. Ich wandte sie einzeln und in Kombination miteinander an, da ich vorher nicht wusste, welche Kombination die besten Ergebnisse erzielen würde.
+
+<h3><img align="center" height="300" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/image%20augmentation.JPG"></h3>
+
+Damit blieben 171 Kombinationen von Studien, Modellen und Bildern übrig. Ich verwendete jedes Modell, um Inferenzen für jeden Satz von Bildern durchzuführen, und verwendete dann die Ergebnisse in den ursprünglichen Regressionsmodellen für jede Studie. Ich betrachtete eine Studie als erfolgreich repliziert, wenn ich zwei Dinge feststellen konnte: Die Attraktivitätsvariable war auf dem 5 %-Niveau signifikant und der Attraktivitätskoeffizient hatte ungefähr den gleichen Effekt in der realen Welt. 
+
+Um die Studien zu replizieren, führte ich zunächst Inferenzen auf den Bildern in Google Colab durch (die neuronalen Netzwerke laufen am besten auf GPUs, und mein Laptop hat keinen). Dazu erstellte ich einen Ordner mit zahlreichen Unterordnern, die jeweils eine andere Kombination von Studienbildern enthielten (d. h. Fotos ohne Hintergrund aus Studie 1). Ich schrieb ein [Skript in Python] (https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/inference.py), das die Inferenz für jede Gruppe von Bildern durchführte und die Ergebnisse in einer separaten CSV-File speicherte. Sobald ich alle Daten hatte, fütterte ich sie mit [Skripten in R](https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/paper%20replication.Rmd), die sie bereinigten, die Werte standardisierten, sie mit dem ursprünglichen Datensatz der Studie zusammenführten, das Regressionsmodell durchführten, das in der ursprünglichen Studie verwendet wurde, und die Ergebnisse dann in zwei CSV-Filen ausgaben. Die erste zeigte die Ergebnisse der Regression und die zweite die Pearson-Korrelation, den Root Mean Square Error und den Mean Absolute Error zwischen den vom neuronalen Netzwerk generierten Daten und den Originaldaten. 
+
+Leider hatten die Modelle Schwierigkeiten, gute Ergebnisse in der Praxis zu erzielen. 
+
+| Studien | #1 | #2 | #3 | #4 | #5 | #6 |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Replizierte Versuche (%) | 0 | 0 | 0 | 2.7 | 10.8 | 27.0 |
+
+Nur eine Minderheit der Kombinationen führte in allen Studien zu signifikanten Ergebnissen, und drei Studien zeigten überhaupt keine signifikanten Ergebnisse. Von den Kombinationen, die signifikante Ergebnisse erbrachten, ergaben die meisten Koeffizienten, die mit denen der ursprünglichen Studien übereinstimmten. In diesem Fall definierte ich dies als eine annähernd gleiche Auswirkung in der Praxis. In drei Fällen war dies jedoch nicht der Fall, was bedeutet, dass nur 8,1 % der Modell-Studien-Bild-Kombinationen erfolgreich repliziert werden konnten - ein kaum zu übertreffender Erfolg. 
+
+Ein Großteil der Probleme ist aus der nachstehenden Tabelle ersichtlich. Auf dem Testsatz ihres ursprünglichen Datensatzes schnitten viele dieser Modelle sehr gut ab: Pearson-Korrelationen von etwa 0,9, RMSEs von 0,25-0,35 (die Punktzahlen lagen in der Regel zwischen 1-5). Bei den neuen Bildern waren die Ergebnisse jedoch oft recht schlecht.
+
+| Maßnahme | RMSE | PC | MAE |
+| :---: | :---: | :---: | :---: |
+| Durchschnitt (über alle Datensätze hinweg) | 1.24 | 0.23 | 1.00 |
+
+Ich habe eine Theorie entwickelt, warum das so ist: Diese Modelle wurden auf sehr rigiden Datensätzen trainiert. Der gebräuchlichste Datensatz, [SCUT-FBP5500,](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release), ist recht gut gemacht, aber die Bilder sind einander sehr ähnlich - nach vorne gerichtet, gut beleuchtet, ohne Hintergrund, in etwa gleich beschnitten. Die in diesen Studien verwendeten Bilder sind jedoch viel variabler und naturalistischer. Es gibt Unterschiede in der Beleuchtung, im Bildausschnitt, in der Neigung des Kopfes und in anderen Faktoren. Es gab auch andere potenzielle Unterschiede. Auf den Bildern aus den Studien sind viele ältere Menschen zu sehen, beim SCUT-FBP sind es überwiegend junge Menschen. Die Studien, die ich repliziert habe, wurden in Europa, den USA und Australien durchgeführt; die Bewertungen von SCUT-FBP stammen von Chinesen. In den Studien wurden viele durchschnittlich aussehende Personen verwendet; bei SCUT-FBP waren es unverhältnismäßig viele sehr attraktive Personen. All dies waren potenzielle Störfaktoren, die ich zu vermeiden hoffte. 
+
+### Trainieren meiner eigenen Netzwerke
+
+Um meine eigenen neuronalen Netze zu trainieren, habe ich einen neu erstellten Datensatz ausgewählt: [MEBeauty(https://github.com/fbplab/MEBeauty-database). Frühere Datensätze waren in der Regel eher formal und wiesen nur eine geringe Vielfalt in Bezug auf Alter und ethnische Zugehörigkeit auf. MEBeauty hingegen enthält eine große Vielfalt an Bildern aus der ganzen Welt, auch von älteren Menschen. Die Bilder sind auch natürlicher (unterschiedliche Beleuchtung, unterschiedliche Posen usw.) und wurden auf eine standardisierte Weise erstellt, die leicht zu kopieren war. 
+
+<h3><img align="center" height="300" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/ME3.png"></h3>
+
+
+Ich [trainierte](https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/training.ipynb) mehrere neue neuronale Netze darauf und wählte die beiden leistungsstärksten aus. Beide waren Versionen des Modells [ComboLoss](https://github.com/lucasxlu/ComboLoss). Sie hatten identische Hyperparameter, mit der Ausnahme, dass eines eine Batch Size von 16 hatte, während das andere eine Batch Size von 32 hatte. 
+
+| Modell | RMSE | MAE | PC |
+| :---: | :---: | :---: | :---: |
+| ComboLoss (MEBeauty) (BS 16) | 1.07 | 0.82 | 0.64 |
+| ComboLoss (MEBeauty) (BS 32) | 1.05 | 0.84 | 0.67 |
+| ComboLoss (SCUT-FBP5500) | 0.21 | 0.27 | 0.92 |
+
+Diese Modelle schnitten in ihren Testsätzen schlechter ab als die Modelle, die mit dem SCUT-FBP5500-Datensatz trainiert wurden, was meiner Meinung nach auf die größere Vielfalt der Bilder zurückzuführen ist. Ihre Leistung war ähnlich wie die der Modelle, die von den Entwicklern des MEBeauty-Datensatzes erstellt wurden. 
+
+Sobald ich meine Modelle hatte, wollte ich sie auf zwei Arten testen. Erstens habe ich versucht, die Studien zu wiederholen, wobei ich drei Bewertungen verwendet habe: eine von jedem der Modelle und eine dritte zusammengesetzte Bewertung ihrer Durchschnittswerte für jedes Bild. 
+
+Meine Ergebnisse waren gemischt. Die meisten Studien konnten wiederum nicht wiederholt werden. Außerdem waren die Ergebnisse verwirrend. Die Leistungen der beiden Modelle wichen voneinander ab, obwohl sie bei den Testgruppen extrem ähnlich waren. Außerdem waren es dieses Mal andere Studien, die sich wiederholten. 
+
+<h3><img align="center" height="200" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/mymodel_pvalues.JPG"></h3>
+
+Nach diesen Replikationen habe ich einen weiteren Test meiner neuronalen Netze durchgeführt. Ein durchgängiges Ergebnis in der Literatur ist, dass rechte Politiker etwas attraktiver sind als linke. Niemand weiß warum, aber es wurde in Studien aus Finnland, den USA, Deutschland, Australien und dem Vereinigten Königreich festgestellt. 
+
+Ich habe daher einen Test mit Bildern von Mitgliedern des US-Kongresses von 2011 bis heute durchgeführt und dabei Mitglieder der Demokratischen Partei als linke Politiker und Republikaner als rechte Politiker verwendet. Alle Bilder stammen aus [Voteview's Member Photos Repository](https://github.com/voteview/member_photos). 
+
+In einem ersten Schritt habe ich einen t-Test durchgeführt, der keinen signifikanten Unterschied ergeben hat. Da es jedoch einige wesentliche Unterschiede zwischen den Parteien gibt - republikanische Politiker sind älter und eher weiß und männlich - habe ich auch eine lineare Regression durchgeführt. Als abhängige Variable verwendete ich die Attraktivitätswerte aus meinen Modellen. Als unabhängige und Kontrollvariablen wählte ich die Partei, das Alter, die Kammer (Repräsentantenhaus/Senat) und das Geschlecht. 
+
+<h3><img align="center" height="400" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/stargazer%20congress.JPG"></h3>
+
+Die Ergebnisse der OLS-Modelle stimmen weitgehend mit den früheren Ergebnissen überein. Beide neuronalen Netze stellen fest, dass republikanische Abgeordnete auf dem 10 %-Niveau positiv mit Attraktivität korreliert sind, während der Durchschnitt den Effekt auf dem 5 %-Niveau findet. Dies ist sogar noch aussagekräftiger als auf den ersten Blick - ich habe meine neuronalen Netze dreimal über dieselben Bilder laufen lassen und jedes Mal etwas andere Ergebnisse erhalten. In den beiden anderen Fällen fand das neuronale Netz mit der Batch Size 16 die Korrelation zwischen Republikanern und Attraktivität auf dem 5 %-Niveau. Die Größe des Effekts ist jedoch relativ gering. Die Attraktivität wird in dieser Studie auf einer Skala von 1-10 gemessen, und die Auswirkung eines Republikaners beträgt nur 0,065 - im wirklichen Leben kaum von Bedeutung. Dieser Wert ist geringer als der in anderen Studien festgestellte Effekt.
+
+Die Kontrollvariablen enthalten ebenfalls einige interessante Informationen. Frühere Studien haben keinen Unterschied in der Attraktivität zwischen männlichen und weiblichen Politikern festgestellt, aber in dieser Studie sind männliche Politiker deutlich weniger attraktiv als weibliche Politiker. Anders als bei der Partei ist dieser Effekt ziemlich groß - zwischen 0,6 und 0,8 auf einer 10-Punkte-Skala. Auch für das Alter wurde in einigen Studien mit menschlichen Beurteilern keine signifikante Korrelation mit der Attraktivität festgestellt. In dieser Studie ist dies jedoch der Fall, obwohl der Unterschied recht gering ist. Ein Altersunterschied von dreißig Jahren würde im Durchschnitt nur mit einem Unterschied von etwa 0,3 einhergehen. Schließlich steht die Tatsache, dass Senatoren attraktiver sind als Abgeordnete, im Einklang mit bestehenden Theorien. Da attraktivere Politiker mehr Stimmen erhalten und Senatoren in der Regel mehr (und schwierigere) Wahlen hinter sich haben als Abgeordnete, ist es logisch, dass der Selektionsdruck dazu führen würde, dass Senatoren im Durchschnitt attraktiver sind. Studien aus der Wirtschaft werfen noch einen anderen Blickwinkel auf: Attraktive Gründer können leichter Geldmittel beschaffen, und ein wichtiger Teil der Arbeit eines amerikanischen Politikers ist die Mittelbeschaffung. Bessere Spendensammler werden mit größerer Wahrscheinlichkeit Senatoren.
+
+## Fazit
+
+Bei all diesen Studien wurde eines deutlich: Deep-Learning-Methoden sind, zumindest in ihrem derzeitigen Stadium, nicht genau genug, um die menschliche Attraktivität durchgängig zu beurteilen und in der wissenschaftlichen Forschung eingesetzt zu werden. Manchmal liefern sie genaue Ergebnisse, aber es ist schwierig, im Voraus zu sagen, ob sie das tun werden. In diesen Studien versagten Deep-Learning-Methoden, die bei einem Datensatz extrem gut abschnitten, bei einem anderen völlig, obwohl sie sich deutlich ähneln. Dies gilt sogar für Methoden, die nach dem Training auf Testdatensätzen gut abschnitten. Noch schlimmer ist, dass zwei sehr ähnliche Deep-Learning-Methoden auf einem Testdatensatz ähnliche Ergebnisse erzielen können, die jedoch bei der Anwendung auf reale Fragestellungen voneinander abweichen. Die Blackbox-Natur des Deep Learning macht es fast unmöglich, dies im Voraus zu beurteilen. 
+
