@@ -2,7 +2,7 @@
 
 **This is the English version. Die deutsche Version finden Sie weiter unten.**
 
-This repository contains the code for my Master’s Thesis in Political Science at the University of Mannheim. For my thesis, I chose a methods-oriented project: whether a practice in social science research, using neural networks to gauge the attractiveness of people in images, gives sufficiently accurate results to be used. 
+This repository contains the code for my Master’s Thesis in Political Science at the University of Mannheim. For my thesis, I chose a methods-oriented project: whether a practice in social science research, using neural networks to gauge the attractiveness of people in images, gives sufficiently accurate results to be used in research. 
 
 To answer this question, I used Python to prepare images, R to conduct studies, and Pytorch, alongside Amazon Sagemaker and S3, to train deep learning computer vision models. 
 
@@ -12,9 +12,9 @@ Some academic researchers have started using neural networks to judge the attrac
 
 There’s a problem, however, that no researchers have yet dealt with- seeing how accurate these neural networks are. Often the trained neural networks are trained on the bulk of a dataset (80-90%) then tested on the remainder. That’s useful information, but what it doesn’t cover is how well the neural networks do on a new dataset- in other words, how generalizable they are. 
 
-That’s the task I set for myself. I first tested eight publicly available pre-trained neural networks by attempting to replicate the results of five published studies (the authors kindly shared their data with me). As they largely failed to replicate the studies, I then trained two new neural networks on a newer dataset that I hoped corrected the flaws of earlier datasets. With these two new networks, I then ran the five studies again and conducted a new study on my own. Results were better, but far from perfect. 
+That’s the task I set for myself. I first tested eight publicly available neural networks, each trained to judge attractiveness in images, by using on hundreds of images that have been used in published studies on the effects of attractiveness. I then attempted to replicate the results of five published studies (the authors kindly shared their data with me). Data from the neural networks largely failed to replicate the studies, so I then tried training two new neural networks on a newer dataset that I hoped corrected the flaws of earlier datasets. With these two new networks, I then ran the five studies again and conducted a new study on my own. Results were better, but far from perfect. 
 
-In the end, I concluded that researchers should not use neural networks to judge attractiveness in their research without making some verifiable improvements to their predictive ability. 
+In the end, I concluded that researchers should not use neural networks to judge attractiveness in their research without verifying that their neural networks are sufficiently generalizable.
 
 ## Technical Details
 
@@ -43,7 +43,7 @@ Before conducting inferences on the images, I did a variety of [image manipulati
 
 <h3><img align="center" height="300" src="https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/images/image%20augmentation.JPG"></h3>
 
-This left me with 171 combinations of studies-models-images. I used each model to conduct inference on each set of images, then used the results in the original regression models for each study. I counted a study as successfully replicated if I saw two things: the attractiveness variable was significant at the 5% level and the attractiveness coefficient had approximately the same real-world effect. 
+This left me with 171 combinations of studies-models-images. I used each model to conduct inference on each set of images, then used the results in the original regression models for each study. I counted a study as successfully replicated if I saw two things: the attractiveness variable was significant at the 5% level and the attractiveness coefficient had approximately the same real-world effect.
 
 To replicate the studies, I first conducted inference on the images in Google Colab (the neural networks run best on GPUs, and my laptop doesn’t have one). To do so, I created a folder with numerous subfolders, each containing a different combination of study-images (i.e. photos with no background from Study 1). I wrote a [script in Python](https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/inference.py) that would conduct inference for each set of images and save the results as a separate csv file. Once I had all my data, I fed it into [scripts in R](https://github.com/vincentium123/Attractiveness-Methods-Evaluation/blob/main/paper%20replication.Rmd) that cleaned it, standardized the values, merged it with the original dataset from the study, conducted whatever regression model was used in the original study, then outputted the results into two csv files. The first showed the results of the regression and the second the Pearson Correlation, Root Mean Square Error, and Mean Absolute Error between the data generated from the neural network and the original data. 
 
